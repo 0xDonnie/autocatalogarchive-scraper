@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Auto Catalog Archive — Bulk Brochure Downloader
 // @namespace    https://github.com/0xDonnie/autocatalogarchive-scraper
-// @version      1.4.0
+// @version      1.4.1
 // @description  Adds a floating panel to autocatalogarchive.com that bulk-downloads brochures for any list of car models you choose. Runs in your real browser session, so Cloudflare is not an issue.
 // @author       0xDonnie
 // @copyright    Copyright (c) 2026 0xDonnie
@@ -67,7 +67,7 @@
   //             comma-separated list of paths if a brand is split across
   //             multiple pages on the site (e.g. Mercedes is "mercedes" plus
   //             a second page for the second half of the alphabet — pass
-  //             both as "mercedes,mercedes-g-z" and the script merges and
+  //             both as "mercedes,mercedes-g-to-z" and the script merges and
   //             deduplicates them under the same query).
   //   - regex : JavaScript regex source, matched against the PDF filename only,
   //             case-insensitive
@@ -78,13 +78,13 @@
     //   Mercedes-Clase-G-2020-USA.pdf      (Spanish — "Clase" means "Class")
     // The (Clase-)? group catches both. The trailing [-_0-9] makes sure we
     // don't accidentally match Mercedes-GL-, Mercedes-GLA-, Mercedes-GLC-, etc.
-    { label: 'Mercedes G-Class',        brand: 'mercedes,mercedes-g-z', regex: 'Mercedes-(Clase-)?G[-_0-9]' },
+    { label: 'Mercedes G-Class',        brand: 'mercedes,mercedes-g-to-z', regex: 'Mercedes-(Clase-)?G[-_0-9]' },
     { label: 'Lotus (all)',             brand: 'lotus',      regex: '^Lotus-' },
     { label: 'Abarth 500',              brand: 'fiat',       regex: 'Abarth-500' },
     // Maybach catalogs are filed as Mercedes-Clase-S-Maybach-*. There is no
     // "S600" in the filename — that's an engine trim, the brochure covers the
     // whole S-Class Maybach line. This pulls every Maybach (incl. EQS SUV Maybach).
-    { label: 'Maybach (all)',           brand: 'mercedes,mercedes-g-z', regex: 'Maybach' },
+    { label: 'Maybach (all)',           brand: 'mercedes,mercedes-g-to-z', regex: 'Maybach' },
     { label: 'Mitsubishi Lancer Evo',   brand: 'mitsubishi', regex: 'Lancer-Evolution' },
     { label: 'Porsche 911 GT3 / GT3 RS',brand: 'porsche',    regex: '911-GT3' },
     { label: 'Porsche Cayenne',         brand: 'porsche',    regex: 'Cayenne' },
@@ -340,7 +340,7 @@
         }
 
         // brand can be a comma-separated list of paths for brands split across
-        // multiple pages (e.g. "mercedes,mercedes-g-z").
+        // multiple pages (e.g. "mercedes,mercedes-g-to-z").
         const brands = q.brand.split(',').map((s) => s.trim().replace(/^\/|\/$/g, '')).filter(Boolean);
         log(`▸ "${q.label || q.brand}" — scansione ${brands.map((b) => '/' + b + '/').join(' + ')}`, 'dim');
 

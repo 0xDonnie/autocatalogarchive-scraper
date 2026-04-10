@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue.svg" alt="License: GPL-3.0"></a>
-  <a href="autocatalogarchive-bulk-downloader.user.js"><img src="https://img.shields.io/badge/version-1.4.0-brightgreen" alt="Version"></a>
+  <a href="autocatalogarchive-bulk-downloader.user.js"><img src="https://img.shields.io/badge/version-1.4.1-brightgreen" alt="Version"></a>
   <img src="https://img.shields.io/badge/type-userscript-7c3aed" alt="Userscript">
   <a href="https://www.tampermonkey.net/"><img src="https://img.shields.io/badge/Tampermonkey-compatible-00485B?logo=tampermonkey&logoColor=white" alt="Tampermonkey"></a>
   <a href="https://violentmonkey.github.io/"><img src="https://img.shields.io/badge/Violentmonkey-compatible-663399" alt="Violentmonkey"></a>
@@ -117,10 +117,10 @@ Lo script parte con questi 7 modelli pre-configurati (gli stessi della richiesta
 
 | Etichetta | Brand path | Regex sul filename |
 |---|---|---|
-| Mercedes G-Class | `mercedes,mercedes-g-z` | `Mercedes-(Clase-)?G[-_0-9]` |
+| Mercedes G-Class | `mercedes,mercedes-g-to-z` | `Mercedes-(Clase-)?G[-_0-9]` |
 | Lotus (all) | `lotus` | `^Lotus-` |
 | Abarth 500 | `fiat` | `Abarth-500` |
-| Maybach (all) | `mercedes,mercedes-g-z` | `Maybach` |
+| Maybach (all) | `mercedes,mercedes-g-to-z` | `Maybach` |
 | Mitsubishi Lancer Evo | `mitsubishi` | `Lancer-Evolution` |
 | Porsche 911 GT3 / GT3 RS | `porsche` | `911-GT3` |
 | Porsche Cayenne | `porsche` | `Cayenne` |
@@ -136,10 +136,10 @@ Ogni voce nel pannello è una **query** composta da 3 campi:
 | Campo | Cosa metterci | Esempio |
 |---|---|---|
 | **etichetta** | nome libero, usato come sottocartella di download | `Ferrari F40` |
-| **brand path** | lo slug del brand sotto `autocatalogarchive.com/` (senza `/`). **Da v1.4.0** puoi mettere più slug separati da virgola se la marca è splittata su più pagine sul sito (es. `mercedes,mercedes-g-z`) | `ferrari` |
+| **brand path** | lo slug del brand sotto `autocatalogarchive.com/` (senza `/`). **Da v1.4.0** puoi mettere più slug separati da virgola se la marca è splittata su più pagine sul sito (es. `mercedes,mercedes-g-to-z`) | `ferrari` |
 | **regex** | espressione regolare (case-insensitive) applicata al **nome del file PDF** | `F40` |
 
-> 💡 **Brand splittati su più pagine**: alcune marche enormi (es. Mercedes) sul sito sono divise in due pagine separate (`Mercedes A-F` e `Mercedes G-Z`). In questi casi metti **entrambi gli slug** nel campo brand separati da virgola: `mercedes,mercedes-g-z`. Lo script li scansiona entrambi e deduplica automaticamente.
+> 💡 **Brand splittati su più pagine**: alcune marche enormi (es. Mercedes) sul sito sono divise in due pagine separate (`Mercedes A-F` e `Mercedes G-Z`). In questi casi metti **entrambi gli slug** nel campo brand separati da virgola: `mercedes,mercedes-g-to-z`. Lo script li scansiona entrambi e deduplica automaticamente.
 
 ### Procedura passo-passo
 
