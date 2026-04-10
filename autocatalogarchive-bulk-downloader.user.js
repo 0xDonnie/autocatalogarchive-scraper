@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Auto Catalog Archive — Bulk Brochure Downloader
 // @namespace    https://github.com/0xDonnie/autocatalogarchive-scraper
-// @version      1.3.2
+// @version      1.4.0
 // @description  Adds a floating panel to autocatalogarchive.com that bulk-downloads brochures for any list of car models you choose. Runs in your real browser session, so Cloudflare is not an issue.
 // @author       0xDonnie
 // @copyright    Copyright (c) 2026 0xDonnie
@@ -63,22 +63,28 @@
   // ---------------------------------------------------------------------------
   // Each row: { label, brand, regex }
   //   - label : free text used for the subfolder name
-  //   - brand : path under autocatalogarchive.com (no slashes)
+  //   - brand : path under autocatalogarchive.com (no slashes), or a
+  //             comma-separated list of paths if a brand is split across
+  //             multiple pages on the site (e.g. Mercedes is "mercedes" plus
+  //             a second page for the second half of the alphabet — pass
+  //             both as "mercedes,mercedes-g-z" and the script merges and
+  //             deduplicates them under the same query).
   //   - regex : JavaScript regex source, matched against the PDF filename only,
   //             case-insensitive
   const DEFAULT_QUERIES = [
-    // Mercedes filenames in this archive use TWO conventions, sometimes mixed:
+    // Mercedes is split across two pages on autocatalogarchive.com (A-F and
+    // G-Z), so we scan both. Filenames use TWO conventions, sometimes mixed:
     //   Mercedes-G-2020-USA.pdf            (English)
     //   Mercedes-Clase-G-2020-USA.pdf      (Spanish — "Clase" means "Class")
     // The (Clase-)? group catches both. The trailing [-_0-9] makes sure we
     // don't accidentally match Mercedes-GL-, Mercedes-GLA-, Mercedes-GLC-, etc.
-    { label: 'Mercedes G-Class',        brand: 'mercedes',   regex: 'Mercedes-(Clase-)?G[-_0-9]' },
+    { label: 'Mercedes G-Class',        brand: 'mercedes,mercedes-g-z', regex: 'Mercedes-(Clase-)?G[-_0-9]' },
     { label: 'Lotus (all)',             brand: 'lotus',      regex: '^Lotus-' },
     { label: 'Abarth 500',              brand: 'fiat',       regex: 'Abarth-500' },
     // Maybach catalogs are filed as Mercedes-Clase-S-Maybach-*. There is no
     // "S600" in the filename — that's an engine trim, the brochure covers the
     // whole S-Class Maybach line. This pulls every Maybach (incl. EQS SUV Maybach).
-    { label: 'Maybach (all)',           brand: 'mercedes',   regex: 'Maybach' },
+    { label: 'Maybach (all)',           brand: 'mercedes,mercedes-g-z', regex: 'Maybach' },
     { label: 'Mitsubishi Lancer Evo',   brand: 'mitsubishi', regex: 'Lancer-Evolution' },
     { label: 'Porsche 911 GT3 / GT3 RS',brand: 'porsche',    regex: '911-GT3' },
     { label: 'Porsche Cayenne',         brand: 'porsche',    regex: 'Cayenne' },
@@ -332,13 +338,17 @@
           log(`skip "${q.label || '(senza nome)'}": brand o regex mancanti`, 'dim');
           continue;
         }
-        log(`▸ "${q.label || q.brand}" — scansione /${q.brand}/`, 'dim');
+
+        // brand can be a comma-separated list of paths for brands split across
+        // multiple pages (e.g. "mercedes,mercedes-g-z").
+        const brands = q.brand.split(',').map((s) => s.trim().replace(/^\/|\/$/g, '')).filter(Boolean);
+        log(`▸ "${q.label || q.brand}" — scansione ${brands.map((b) => '/' + b + '/').join(' + ')}`, 'dim');
 
         let regex;
         try { regex = new RegExp(q.regex, 'i'); }
         catch (e) { log(`  regex invalida: ${e.message}`, 'err'); continue; }
 
-        const pdfs = await collectPdfsFromBrand(q.brand, state.aborter.signal);
+        const pdfs = await collectPdfsFromBrands(brands, state.aborter.signal);
         const filtered = pdfs.filter((p) => regex.test(filenameOf(p)));
         log(`  trovati ${pdfs.length} PDF totali, ${filtered.length} dopo filtro`, filtered.length ? 'ok' : 'err');
 
@@ -440,6 +450,18 @@
   // Regex used to pull a "*.pdf" URL out of an HTML attribute (typically an
   // onclick like  location.href='https://.../File.pdf';  ).
   const PDF_IN_ATTR = /['"]([^'"\s]*\.pdf(?:\?[^'"\s]*)?)['"]/i;
+
+  // Scan a list of brand paths and merge their results, deduplicating by URL.
+  // Used for brands that are split across multiple pages on the site.
+  async function collectPdfsFromBrands(brands, signal) {
+    const merged = new Set();
+    for (const b of brands) {
+      if (signal.aborted) break;
+      const list = await collectPdfsFromBrand(b, signal);
+      list.forEach((u) => merged.add(u));
+    }
+    return [...merged];
+  }
 
   // Visit /<brand>/, follow any pagination, return every PDF URL found.
   async function collectPdfsFromBrand(brand, signal) {
