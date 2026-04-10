@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Auto Catalog Archive — Bulk Brochure Downloader
 // @namespace    https://github.com/0xDonnie/autocatalogarchive-scraper
-// @version      1.4.1
+// @version      1.5.0
 // @description  Adds a floating panel to autocatalogarchive.com that bulk-downloads brochures for any list of car models you choose. Runs in your real browser session, so Cloudflare is not an issue.
 // @author       0xDonnie
 // @copyright    Copyright (c) 2026 0xDonnie
@@ -88,6 +88,15 @@
     { label: 'Mitsubishi Lancer Evo',   brand: 'mitsubishi', regex: 'Lancer-Evolution' },
     { label: 'Porsche 911 GT3 / GT3 RS',brand: 'porsche',    regex: '911-GT3' },
     { label: 'Porsche Cayenne',         brand: 'porsche',    regex: 'Cayenne' },
+    { label: 'Nissan Skyline',          brand: 'nissan',     regex: 'Skyline' },
+    // AMG catalogs are spread across both Mercedes pages and across many
+    // model lines (G63, C63, S63, GT, etc). The "AMG" filename token catches
+    // all of them, including the dedicated AMG-only catalogs and the
+    // model-specific AMG variants.
+    { label: 'Mercedes AMG (all)',      brand: 'mercedes,mercedes-g-to-z', regex: 'AMG' },
+    // BMW M3 across all generations. The [-_] anchor after M3 prevents
+    // matching things like "M30" engine references in other brochures.
+    { label: 'BMW M3',                  brand: 'bmw',        regex: 'BMW-M3[-_]' },
   ];
 
   const DEFAULT_SETTINGS = {
