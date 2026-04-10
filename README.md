@@ -1,12 +1,27 @@
-# Auto Catalog Archive — Bulk Brochure Downloader
+<h1 align="center">Auto Catalog Archive — Bulk Brochure Downloader</h1>
 
-> Scarica in massa le brochure PDF di [autocatalogarchive.com](https://autocatalogarchive.com) per qualsiasi lista di modelli auto, in un click, dal tuo browser.
+<p align="center">
+  <i>Scarica in massa le brochure PDF di <a href="https://autocatalogarchive.com">autocatalogarchive.com</a> per qualsiasi lista di modelli auto, in un click, dal tuo browser.</i>
+</p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Userscript](https://img.shields.io/badge/type-userscript-7c3aed)](autocatalogarchive-bulk-downloader.user.js)
-[![Tampermonkey](https://img.shields.io/badge/Tampermonkey-compatible-00485B?logo=tampermonkey&logoColor=white)](https://www.tampermonkey.net/)
-[![Violentmonkey](https://img.shields.io/badge/Violentmonkey-compatible-663399)](https://violentmonkey.github.io/)
-[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](#contributing)
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+  <a href="autocatalogarchive-bulk-downloader.user.js"><img src="https://img.shields.io/badge/version-1.2.0-brightgreen" alt="Version"></a>
+  <img src="https://img.shields.io/badge/type-userscript-7c3aed" alt="Userscript">
+  <a href="https://www.tampermonkey.net/"><img src="https://img.shields.io/badge/Tampermonkey-compatible-00485B?logo=tampermonkey&logoColor=white" alt="Tampermonkey"></a>
+  <a href="https://violentmonkey.github.io/"><img src="https://img.shields.io/badge/Violentmonkey-compatible-663399" alt="Violentmonkey"></a>
+  <a href="#contributing"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen" alt="PRs welcome"></a>
+</p>
+
+<p align="center">
+  <b><a href="https://github.com/0xDonnie/autocatalogarchive-scraper/raw/main/autocatalogarchive-bulk-downloader.user.js">⬇️ Installa con un click (Tampermonkey)</a></b>
+  &nbsp;·&nbsp;
+  <a href="#installazione">Installazione manuale</a>
+  &nbsp;·&nbsp;
+  <a href="#come-funziona-davvero">Come funziona</a>
+  &nbsp;·&nbsp;
+  <a href="#disclaimer">Disclaimer</a>
+</p>
 
 ---
 
@@ -66,12 +81,20 @@ Una di queste estensioni del browser:
 - [Greasemonkey](https://www.greasespot.net/) (Firefox)
 
 ### 2. Installa lo script
-Clicca [questo link](autocatalogarchive-bulk-downloader.user.js) (in modalità raw su GitHub) e Tampermonkey ti proporrà automaticamente l'install.
 
-In alternativa:
+**Modo veloce** (consigliato):
+
+> 👉 **[Click qui per installare](https://github.com/0xDonnie/autocatalogarchive-scraper/raw/main/autocatalogarchive-bulk-downloader.user.js)** 👈
+
+Tampermonkey rileva automaticamente che il file è uno userscript e ti mostra la schermata di install. Clicca **Install** e fine.
+
+**Modo manuale** (se il primo non funziona):
 1. Apri Tampermonkey → "Crea un nuovo script"
-2. Cancella il contenuto e incolla [`autocatalogarchive-bulk-downloader.user.js`](autocatalogarchive-bulk-downloader.user.js)
-3. `Ctrl+S` per salvare
+2. Cancella tutto il contenuto del nuovo script
+3. Apri il [file userscript](autocatalogarchive-bulk-downloader.user.js), copia tutto, incolla nel Tampermonkey
+4. `Ctrl+S` per salvare
+
+**Aggiornamenti futuri**: Tampermonkey controlla automaticamente la `@version` nello header e ti propone l'update quando una versione nuova è pushata su `main`.
 
 ### 3. Usa
 1. Vai su https://autocatalogarchive.com (passa il check Cloudflare la prima volta)
