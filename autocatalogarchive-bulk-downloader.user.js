@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Auto Catalog Archive — Bulk Brochure Downloader
 // @namespace    https://github.com/0xDonnie/autocatalogarchive-scraper
-// @version      1.3.0
+// @version      1.3.1
 // @description  Adds a floating panel to autocatalogarchive.com that bulk-downloads brochures for any list of car models you choose. Runs in your real browser session, so Cloudflare is not an issue.
 // @author       0xDonnie
 // @license      MIT
@@ -332,6 +332,15 @@
         const pdfs = await collectPdfsFromBrand(q.brand, state.aborter.signal);
         const filtered = pdfs.filter((p) => regex.test(filenameOf(p)));
         log(`  trovati ${pdfs.length} PDF totali, ${filtered.length} dopo filtro`, filtered.length ? 'ok' : 'err');
+
+        // QoL: when the filter matches nothing, dump a few sample filenames so
+        // the user can see what's available and tweak their regex accordingly.
+        if (pdfs.length > 0 && filtered.length === 0) {
+          const sample = pdfs.slice(0, 10).map(filenameOf);
+          log(`  esempi di filename disponibili (per scrivere meglio la regex):`, 'dim');
+          sample.forEach((n) => log(`    · ${n}`, 'dim'));
+          if (pdfs.length > 10) log(`    · …e altri ${pdfs.length - 10}`, 'dim');
+        }
 
         for (const url of filtered) {
           allTargets.push({ url, label: q.label || q.brand, filename: filenameOf(url) });

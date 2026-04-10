@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
-  <a href="autocatalogarchive-bulk-downloader.user.js"><img src="https://img.shields.io/badge/version-1.3.0-brightgreen" alt="Version"></a>
+  <a href="autocatalogarchive-bulk-downloader.user.js"><img src="https://img.shields.io/badge/version-1.3.1-brightgreen" alt="Version"></a>
   <img src="https://img.shields.io/badge/type-userscript-7c3aed" alt="Userscript">
   <a href="https://www.tampermonkey.net/"><img src="https://img.shields.io/badge/Tampermonkey-compatible-00485B?logo=tampermonkey&logoColor=white" alt="Tampermonkey"></a>
   <a href="https://violentmonkey.github.io/"><img src="https://img.shields.io/badge/Violentmonkey-compatible-663399" alt="Violentmonkey"></a>
@@ -129,26 +129,100 @@ Puoi aggiungerne quanti vuoi, modificarli, eliminarli — la configurazione vien
 
 ---
 
-## Come si configura una nuova query
+## Aggiungere una nuova macchina
 
-Ogni riga ha 3 campi:
+Ogni voce nel pannello è una **query** composta da 3 campi:
 
 | Campo | Cosa metterci | Esempio |
 |---|---|---|
 | **etichetta** | nome libero, usato come sottocartella di download | `Ferrari F40` |
-| **brand path** | lo slug della pagina brand su autocatalogarchive.com (senza `/`) | `ferrari` |
+| **brand path** | lo slug del brand sotto `autocatalogarchive.com/` (senza `/`) | `ferrari` |
 | **regex** | espressione regolare (case-insensitive) applicata al **nome del file PDF** | `F40` |
 
-Lo script:
-1. apre `https://autocatalogarchive.com/<brand>/`
-2. segue la paginazione fino a esaurire i risultati
-3. raccoglie tutti gli `<a href>` che puntano a `wp-content/uploads/.../*.pdf` (sia diretti, sia dentro le pagine dei singoli post)
-4. tiene solo quelli il cui **filename** matcha la tua regex
+### Procedura passo-passo
 
-Suggerimenti per le regex:
-- ancorare l'inizio con `^` se vuoi solo i file che iniziano per quel pattern (es. `^Lotus-` evita di pescare file di altre marche che contengono "Lotus" nella descrizione)
-- usare `(`alternative`)` per pescare più varianti (es. `Mercedes-G(-|63|65)`)
-- attenzione ai modelli con nome ambiguo (es. cercare `S` da solo prende qualsiasi cosa: usare `S-Class`, `S-?600`, ecc.)
+**1) Trovare il brand path** — vai su https://autocatalogarchive.com, clicca sul logo della marca dal **Brand Index** in alto, e guarda l'URL. Quello che c'è dopo `autocatalogarchive.com/` (senza slash) è il brand path.
+
+| Marca | Brand path |
+|---|---|
+| Ferrari | `ferrari` |
+| Lamborghini | `lamborghini` |
+| BMW | `bmw` |
+| Audi | `audi` |
+| Mercedes (anche AMG e Maybach) | `mercedes` |
+| Fiat (anche Abarth) | `fiat` |
+| Mitsubishi | `mitsubishi` |
+| Porsche | `porsche` |
+| Lotus | `lotus` |
+| MG | `mg` |
+| GWM | `gwm` |
+
+> ⚠️ Alcune sub-brand stanno sotto la casa madre: **Abarth → `fiat`**, **Maybach e AMG → `mercedes`**, **Mini → `bmw`**, ecc.
+
+**2) Inserire la query nel pannello con regex temporanea** — apri il pannello, click **+ aggiungi modello**, riempi:
+   - etichetta: `Ferrari F40`
+   - brand path: `ferrari`
+   - regex: `F40` (anche solo questa per iniziare, raffini dopo)
+
+**3) Capire i nomi reali dei file** — click **Scarica tutto**. Lo script scansiona `/ferrari/` e:
+   - se la regex matcha **almeno un file**: parte e scarica
+   - se matcha **0 file**: ti stampa nel log **10 esempi di filename disponibili** della marca, così vedi com'è strutturato il naming. Questo è il momento di raffinare la regex copiando il pattern dei nomi veri.
+
+**4) Raffinare la regex** — guarda gli esempi nel log e adatta. Es. se vedi:
+   ```
+   · Ferrari-F40-1987-INT.pdf
+   · Ferrari-F40-1992-IT.pdf
+   · Ferrari-F40-Competizione-1989-INT.pdf
+   ```
+   La regex `F40` è già ok. Se invece vedessi `Ferrari-F40-LM-...` e tu volessi solo gli stradali (no LM), useresti `F40(?!-LM)`.
+
+### Cheat sheet regex
+
+| Pattern | Cosa fa | Esempio |
+|---|---|---|
+| `Cayenne` | matcha qualunque file con "cayenne" dentro | tutti i Cayenne |
+| `^Lotus-` | matcha file che **iniziano** con "Lotus-" | solo brochure Lotus, esclude eventuali "lotus-position-yoga.pdf" 😅 |
+| `911-GT3` | matcha "911-GT3" e quindi anche "911-GT3-RS" | tutti i GT3 e GT3 RS |
+| `Mercedes-G(-\|63\|65)` | matcha "Mercedes-G-", "Mercedes-G63", "Mercedes-G65" ma **non** GL/GLA/GLC | solo G-Class |
+| `F40\|F50` | matcha F40 oppure F50 | due modelli in una query |
+| `F40(?!-LM)` | matcha "F40" non seguito da "-LM" | esclude le versioni LM |
+| `Mustang.*Shelby` | matcha qualsiasi cosa con "Mustang" seguito (più avanti) da "Shelby" | tutte le Shelby Mustang |
+| `M3-(E30\|E36\|E46\|E92)` | matcha M3 di una specifica generazione | M3 classici |
+| `[Ee]volution` | case-insensitive in più posizioni (anche se la `i` flag c'è già di default) | poco utile in pratica |
+| `\\b911\\b` | matcha "911" come parola intera | solo 911, non 9911 |
+
+> 💡 La regex è applicata **solo al nome del file**, non all'URL completo, e con il flag `i` (case-insensitive) attivo. Quindi `cayenne` e `Cayenne` sono equivalenti.
+
+### Esempi pronti da copiare
+
+| Modello | Etichetta | Brand path | Regex |
+|---|---|---|---|
+| Ferrari F40 | `Ferrari F40` | `ferrari` | `F40` |
+| Ferrari Enzo | `Ferrari Enzo` | `ferrari` | `Enzo` |
+| Ferrari LaFerrari | `LaFerrari` | `ferrari` | `LaFerrari` |
+| Lamborghini Countach | `Countach` | `lamborghini` | `Countach` |
+| Lamborghini Diablo | `Diablo` | `lamborghini` | `Diablo` |
+| BMW M3 (tutte le generazioni) | `BMW M3` | `bmw` | `M3-(E30\|E36\|E46\|E90\|E92\|F80\|G80)` |
+| BMW M5 | `BMW M5` | `bmw` | `^BMW-M5` |
+| Audi RS6 | `Audi RS6` | `audi` | `RS6\|RS-6` |
+| Audi R8 | `Audi R8` | `audi` | `^Audi-R8` |
+| Porsche 911 Turbo | `911 Turbo` | `porsche` | `911-Turbo` |
+| Porsche 918 Spyder | `918 Spyder` | `porsche` | `918` |
+| McLaren P1 | `McLaren P1` | `mclaren` | `P1` |
+| Toyota Supra | `Supra` | `toyota` | `Supra` |
+| Nissan GT-R | `Nissan GT-R` | `nissan` | `GT-R\|GTR` |
+| Honda NSX | `NSX` | `honda` | `NSX` |
+| Mazda RX-7 | `RX-7` | `mazda` | `RX-7` |
+| Bugatti Veyron | `Veyron` | `bugatti` | `Veyron` |
+| Bugatti Chiron | `Chiron` | `bugatti` | `Chiron` |
+
+### Trabocchetti comuni
+
+- **Sub-brand**: Abarth è dentro `/fiat/`, Maybach dentro `/mercedes/`, Mini dentro `/bmw/`. Sempre verificare.
+- **Naming "spagnolo"**: alcuni file Mercedes hanno il nome in spagnolo (`Mercedes-Clase-S-...` invece di `Mercedes-S-Class-...`). Se la regex non matcha, controlla gli esempi che lo script ti stampa nel log.
+- **Generazioni**: il filename non contiene sempre la generazione (es. `Mitsubishi-Lancer-Evolution-2011-UK.pdf` non dice "Evo X"). Se vuoi una sola generazione, filtra per **anno** nel nome: `Lancer-Evolution-(200[789]|201[0-6])` per gli anni 2007-2016 (Evo X).
+- **Modelli con nome cortissimo**: cercare `S` da solo prende mezzo catalogo. Usa `S-Class`, `S-?600`, `^Mercedes-S-`, ecc.
+- **Modelli con nome che è anche una parola comune**: es. cercare `Ka` (Ford Ka) prenderebbe anche "Kapasitas". Usa `^Ford-Ka` per ancorare.
 
 ---
 
