@@ -4,7 +4,8 @@
 // @version      1.3.1
 // @description  Adds a floating panel to autocatalogarchive.com that bulk-downloads brochures for any list of car models you choose. Runs in your real browser session, so Cloudflare is not an issue.
 // @author       0xDonnie
-// @license      MIT
+// @copyright    Copyright (c) 2026 0xDonnie
+// @license      GPL-3.0-or-later
 // @homepageURL  https://github.com/0xDonnie/autocatalogarchive-scraper
 // @supportURL   https://github.com/0xDonnie/autocatalogarchive-scraper/issues
 // @updateURL    https://github.com/0xDonnie/autocatalogarchive-scraper/raw/main/autocatalogarchive-bulk-downloader.user.js

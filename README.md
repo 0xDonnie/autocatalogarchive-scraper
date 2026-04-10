@@ -5,12 +5,12 @@
 </p>
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue.svg" alt="License: GPL-3.0"></a>
   <a href="autocatalogarchive-bulk-downloader.user.js"><img src="https://img.shields.io/badge/version-1.3.1-brightgreen" alt="Version"></a>
   <img src="https://img.shields.io/badge/type-userscript-7c3aed" alt="Userscript">
   <a href="https://www.tampermonkey.net/"><img src="https://img.shields.io/badge/Tampermonkey-compatible-00485B?logo=tampermonkey&logoColor=white" alt="Tampermonkey"></a>
   <a href="https://violentmonkey.github.io/"><img src="https://img.shields.io/badge/Violentmonkey-compatible-663399" alt="Violentmonkey"></a>
-  <a href="#contributing"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen" alt="PRs welcome"></a>
+  <a href="#contributi-e-issue"><img src="https://img.shields.io/badge/PRs-only%20if%20they%20improve-orange" alt="PRs only if they improve"></a>
 </p>
 
 <p align="center">
@@ -333,17 +333,44 @@ PR aperte per chiunque voglia contribuire — vedi sotto.
 
 ---
 
-## Contributing
+## Contributi e issue
 
-1. Fork
-2. Modifica `autocatalogarchive-bulk-downloader.user.js`
-3. Bumpa la `@version` nell'header
-4. Apri una PR descrivendo cosa cambia e perché
+Il progetto è **open source** (GPL-3.0) ma il branch `main` di questo repo è **gatekept**: le Pull Request vengono accettate **solo se migliorano davvero il progetto**. L'autore (`@0xDonnie`) ha l'ultima parola sul cosa è "miglioramento".
 
-Non c'è build, non c'è test runner: è un singolo file. Test manuale visitando il sito con lo script attivo.
+**Cosa viene tipicamente accettato:**
+- ✅ bug fix ben documentati
+- ✅ supporto a brand/template nuovi del sito quando cambia
+- ✅ feature richieste in una issue e discusse prima
+- ✅ semplificazioni di codice senza perdita di funzionalità
+- ✅ traduzioni del README, screenshot, fix di typo
+
+**Cosa NON viene accettato:**
+- ❌ "refactor" che riscrivono mezzo file senza ragione tecnica
+- ❌ aggiunta di dipendenze non necessarie
+- ❌ feature ipotetiche non richieste da nessuno
+- ❌ cambi puramente stilistici (formattazione, naming, ecc.)
+- ❌ qualsiasi cosa che renda lo userscript meno affidabile/più lento
+
+**Procedura consigliata:**
+1. Apri prima una **issue** descrivendo il problema o l'idea: https://github.com/0xDonnie/autocatalogarchive-scraper/issues
+2. Aspetta un commento dell'autore — molto spesso ti dice subito se l'idea verrà accettata
+3. Solo allora fai fork → modifica → bumpa la `@version` → apri PR linkata alla issue
+
+Se il tuo PR viene rifiutato puoi sempre tenere il fork e usarlo per te (è GPL, sei libero di farlo): la cosa importante è che **anche il tuo fork resti GPL** e con sorgente pubblico, così altri possano vederlo e migliorarlo a loro volta.
 
 ---
 
-## License
+## Licenza
 
-[MIT](LICENSE) — fai quello che vuoi, niente garanzie.
+**[GNU General Public License v3.0 or later](LICENSE)** — open source copyleft.
+
+In sintesi (questo è un riassunto, fa fede solo il testo in [LICENSE](LICENSE)):
+- ✅ puoi **usare** lo userscript liberamente, anche commercialmente
+- ✅ puoi **studiare** il codice
+- ✅ puoi **modificarlo** e **ridistribuirlo**
+- ✅ puoi **forkare** il repo
+- ⚠️ **MA**: ogni copia/modifica che ridistribuisci deve **restare GPL-3.0** e con **sorgente pubblico**. Non puoi prendere questo codice, modificarlo e venderlo come prodotto chiuso. Le tue modifiche devono essere disponibili agli stessi termini.
+- ⚠️ Devi mantenere le note di copyright e di licenza nei file che ridistribuisci.
+- ⚠️ Non c'è garanzia di nessun tipo.
+
+Questa scelta è deliberata: garantisce che qualsiasi miglioramento al progetto resti accessibile a tutta la community e che nessuno possa "chiudere" le idee del progetto in un prodotto proprietario.
