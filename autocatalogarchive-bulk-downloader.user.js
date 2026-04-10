@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Auto Catalog Archive — Bulk Brochure Downloader
 // @namespace    https://github.com/0xDonnie/autocatalogarchive-scraper
-// @version      1.3.1
+// @version      1.3.2
 // @description  Adds a floating panel to autocatalogarchive.com that bulk-downloads brochures for any list of car models you choose. Runs in your real browser session, so Cloudflare is not an issue.
 // @author       0xDonnie
 // @copyright    Copyright (c) 2026 0xDonnie
@@ -67,12 +67,20 @@
   //   - regex : JavaScript regex source, matched against the PDF filename only,
   //             case-insensitive
   const DEFAULT_QUERIES = [
-    { label: 'Mercedes G-Class',        brand: 'mercedes',   regex: 'Mercedes-G(-|63|65)' },
+    // Mercedes filenames in this archive use TWO conventions, sometimes mixed:
+    //   Mercedes-G-2020-USA.pdf            (English)
+    //   Mercedes-Clase-G-2020-USA.pdf      (Spanish — "Clase" means "Class")
+    // The (Clase-)? group catches both. The trailing [-_0-9] makes sure we
+    // don't accidentally match Mercedes-GL-, Mercedes-GLA-, Mercedes-GLC-, etc.
+    { label: 'Mercedes G-Class',        brand: 'mercedes',   regex: 'Mercedes-(Clase-)?G[-_0-9]' },
     { label: 'Lotus (all)',             brand: 'lotus',      regex: '^Lotus-' },
     { label: 'Abarth 500',              brand: 'fiat',       regex: 'Abarth-500' },
-    { label: 'Maybach S600 / S-Class',  brand: 'mercedes',   regex: 'Maybach' },
-    { label: 'Mitsubishi Lancer Evo X', brand: 'mitsubishi', regex: 'Lancer-Evolution' },
-    { label: 'Porsche 911 GT3 RS',      brand: 'porsche',    regex: '911-GT3' },
+    // Maybach catalogs are filed as Mercedes-Clase-S-Maybach-*. There is no
+    // "S600" in the filename — that's an engine trim, the brochure covers the
+    // whole S-Class Maybach line. This pulls every Maybach (incl. EQS SUV Maybach).
+    { label: 'Maybach (all)',           brand: 'mercedes',   regex: 'Maybach' },
+    { label: 'Mitsubishi Lancer Evo',   brand: 'mitsubishi', regex: 'Lancer-Evolution' },
+    { label: 'Porsche 911 GT3 / GT3 RS',brand: 'porsche',    regex: '911-GT3' },
     { label: 'Porsche Cayenne',         brand: 'porsche',    regex: 'Cayenne' },
   ];
 

@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue.svg" alt="License: GPL-3.0"></a>
-  <a href="autocatalogarchive-bulk-downloader.user.js"><img src="https://img.shields.io/badge/version-1.3.1-brightgreen" alt="Version"></a>
+  <a href="autocatalogarchive-bulk-downloader.user.js"><img src="https://img.shields.io/badge/version-1.3.2-brightgreen" alt="Version"></a>
   <img src="https://img.shields.io/badge/type-userscript-7c3aed" alt="Userscript">
   <a href="https://www.tampermonkey.net/"><img src="https://img.shields.io/badge/Tampermonkey-compatible-00485B?logo=tampermonkey&logoColor=white" alt="Tampermonkey"></a>
   <a href="https://violentmonkey.github.io/"><img src="https://img.shields.io/badge/Violentmonkey-compatible-663399" alt="Violentmonkey"></a>
@@ -117,12 +117,12 @@ Lo script parte con questi 7 modelli pre-configurati (gli stessi della richiesta
 
 | Etichetta | Brand path | Regex sul filename |
 |---|---|---|
-| Mercedes G-Class | `mercedes` | `Mercedes-G(-\|63\|65)` |
+| Mercedes G-Class | `mercedes` | `Mercedes-(Clase-)?G[-_0-9]` |
 | Lotus (all) | `lotus` | `^Lotus-` |
 | Abarth 500 | `fiat` | `Abarth-500` |
-| Maybach S600 / S-Class | `mercedes` | `Maybach` |
-| Mitsubishi Lancer Evo X | `mitsubishi` | `Lancer-Evolution` |
-| Porsche 911 GT3 RS | `porsche` | `911-GT3` |
+| Maybach (all) | `mercedes` | `Maybach` |
+| Mitsubishi Lancer Evo | `mitsubishi` | `Lancer-Evolution` |
+| Porsche 911 GT3 / GT3 RS | `porsche` | `911-GT3` |
 | Porsche Cayenne | `porsche` | `Cayenne` |
 
 Puoi aggiungerne quanti vuoi, modificarli, eliminarli — la configurazione viene salvata localmente con `GM_setValue`.
