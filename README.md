@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
-  <a href="autocatalogarchive-bulk-downloader.user.js"><img src="https://img.shields.io/badge/version-1.2.0-brightgreen" alt="Version"></a>
+  <a href="autocatalogarchive-bulk-downloader.user.js"><img src="https://img.shields.io/badge/version-1.3.0-brightgreen" alt="Version"></a>
   <img src="https://img.shields.io/badge/type-userscript-7c3aed" alt="Userscript">
   <a href="https://www.tampermonkey.net/"><img src="https://img.shields.io/badge/Tampermonkey-compatible-00485B?logo=tampermonkey&logoColor=white" alt="Tampermonkey"></a>
   <a href="https://violentmonkey.github.io/"><img src="https://img.shields.io/badge/Violentmonkey-compatible-663399" alt="Violentmonkey"></a>
@@ -106,6 +106,8 @@ I PDF finiscono in `~/Downloads/AutoCatalogArchive/<Etichetta modello>/<filename
 > 💡 **Routing in sottocartelle** (opzionale, ma carino): in Tampermonkey vai su **Impostazioni → Modalità → Avanzata** e in **Download BETA** scegli `Browser API`. Così i PDF finiscono in `Downloads/AutoCatalogArchive/<Etichetta>/<file.pdf>`. Senza questa opzione lo script riconosce il fallimento di `GM_download`, passa automaticamente al fallback **fetch+blob+anchor** e i PDF finiscono nella cartella Downloads predefinita con il nome prefissato (es. `AutoCatalogArchive__Mercedes-G-Class__Mercedes-G-2020-USA.pdf`) per raggrupparli alfabeticamente.
 
 > ⚠️ **Permesso "download multipli"**: Chrome al primo run mostra un banner in alto "Vuoi consentire a autocatalogarchive.com di scaricare più file?". Click **Consenti**. Senza questo permesso il browser blocca silenziosamente i download dopo il primo.
+
+> 🛑 **Se prendi una raffica di HTTP 403**: Cloudflare ti ha messo in time-out perché ha visto troppe richieste in poco tempo. Soluzione: **F5** sulla pagina (rinfreschi il cookie `cf_clearance`), poi rilancia **Scarica tutto** — il dedup salta tutto quello già fatto e riprende da dove eri. Da v1.3.0 lo script gestisce il backoff automatico: alla prima 403 aspetta 30 secondi, alla seconda 60, alla terza 90, e dopo 4 di fila si ferma con un messaggio chiaro chiedendoti di fare F5.
 
 ---
 

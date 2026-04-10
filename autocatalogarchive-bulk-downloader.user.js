@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Auto Catalog Archive — Bulk Brochure Downloader
 // @namespace    https://github.com/0xDonnie/autocatalogarchive-scraper
-// @version      1.2.0
+// @version      1.3.0
 // @description  Adds a floating panel to autocatalogarchive.com that bulk-downloads brochures for any list of car models you choose. Runs in your real browser session, so Cloudflare is not an issue.
 // @author       0xDonnie
 // @license      MIT
@@ -76,10 +76,12 @@
   ];
 
   const DEFAULT_SETTINGS = {
-    delayMs: 700,        // wait between downloads (be polite)
+    delayMs: 1500,       // base wait between downloads (be polite). Real wait is delayMs ± 40%.
     maxPages: 50,        // safety cap on pagination
     useSubfolders: true, // route downloads into per-query folders
     rootFolder: 'AutoCatalogArchive', // top-level folder under your Downloads
+    backoffMs: 30000,    // pause this long after a 403 from Cloudflare
+    maxBackoffs: 3,      // give up after this many consecutive 403s
   };
 
   const STORAGE_KEYS = {
@@ -349,6 +351,8 @@
 
       // 2. Download
       let done = 0, skipped = 0, failed = 0;
+      let consecutive403 = 0;
+
       for (const t of targets) {
         if (state.aborter.signal.aborted) break;
 
@@ -367,14 +371,44 @@
           done++;
           setCounter(done, targets.length);
           log(`  ok  ${t.label} → ${t.filename}`, 'ok');
+          consecutive403 = 0; // reset on any success
         } catch (e) {
-          failed++;
-          done++;
-          setCounter(done, targets.length);
-          log(`  err ${t.filename} — ${e.message || e}`, 'err');
+          const msg = String(e && e.message || e);
+          const is403 = /\b403\b/.test(msg);
+          if (is403) {
+            consecutive403++;
+            if (consecutive403 > state.settings.maxBackoffs) {
+              log(`  ⛔ ${state.settings.maxBackoffs + 1} 403 di fila — Cloudflare ti ha messo in time-out. Premi F5 sulla pagina e poi "Scarica tutto" di nuovo (il dedup salterà i file già fatti).`, 'err');
+              break;
+            }
+            const wait = state.settings.backoffMs * consecutive403; // 30s, 60s, 90s
+            log(`  ⚠ 403 da Cloudflare. Pausa ${Math.round(wait/1000)}s e riprovo (${consecutive403}/${state.settings.maxBackoffs})…`, 'err');
+            await sleep(wait, state.aborter.signal);
+            // retry the same file once after the backoff
+            try {
+              await downloadPdf(t);
+              state.downloaded.add(t.url);
+              saveJSON(STORAGE_KEYS.downloaded, [...state.downloaded]);
+              done++;
+              setCounter(done, targets.length);
+              log(`  ok  ${t.label} → ${t.filename} (dopo backoff)`, 'ok');
+              consecutive403 = 0;
+            } catch (e2) {
+              failed++;
+              done++;
+              setCounter(done, targets.length);
+              log(`  err ${t.filename} — ${e2.message || e2}`, 'err');
+            }
+          } else {
+            failed++;
+            done++;
+            setCounter(done, targets.length);
+            log(`  err ${t.filename} — ${msg}`, 'err');
+          }
         }
 
-        await sleep(state.settings.delayMs, state.aborter.signal);
+        // Polite jittered delay between downloads
+        await sleep(jitter(state.settings.delayMs), state.aborter.signal);
       }
 
       log(`— fine: ${done - skipped - failed} scaricati, ${skipped} skip, ${failed} errori —`, failed ? 'err' : 'ok');
@@ -563,6 +597,12 @@
         signal.addEventListener('abort', () => { clearTimeout(t); reject(new Error('aborted')); }, { once: true });
       }
     });
+  }
+  // Random jitter ±40% so that the request cadence doesn't look mechanical to
+  // Cloudflare's bot scoring.
+  function jitter(ms) {
+    const span = ms * 0.4;
+    return Math.max(0, Math.round(ms - span + Math.random() * span * 2));
   }
   function el(tag, attrs, children) {
     const e = document.createElement(tag);
